@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Run Typst Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Typst
+        uses: typst-community/setup-typst@v3
+        with:
+          typst-version: 'latest' # Uses the latest official Typst release
+
+      - name: Compile Test File
+        # We compile the test file. If it panics due to failed assertions or typing issues, the step fails.
+        run: typst compile tests/test.typ tests/test.pdf
+
+      # (Optional) You can upload the compiled test PDF to inspect if anything visual is rendered
+      - name: Upload Test PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: check-output
+          path: tests/test.pdf
+          retention-days: 1
