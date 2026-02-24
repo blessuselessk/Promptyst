@@ -148,7 +148,7 @@
   id:          none,
   version:     none,
   role:        none,
-  context:     none,
+  ctx:         none,
   constraints: none,
   steps:       none,
   inputs:      none,
@@ -158,7 +158,7 @@
   let id          = _require(id,          "prompt.id")
   let version     = _require(version,     "prompt.version")
   let role        = _require(role,        "prompt.role")
-  let ctx         = _require(context,     "prompt.context")
+  let ctx         = _require(ctx,         "prompt.ctx")
   let constraints = _require-nonempty(constraints, "prompt.constraints")
   let steps       = _require-nonempty(steps,        "prompt.steps")
   let inputs      = _require-nonempty(inputs,       "prompt.inputs")
@@ -200,7 +200,7 @@
     id:          id,
     version:     version,
     role:        role,
-    context:     ctx,
+    "context":     ctx,
     constraints: constraints,
     steps:       steps,
     inputs:      inputs,

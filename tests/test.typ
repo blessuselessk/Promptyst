@@ -29,7 +29,7 @@
   id:          "ci-test",
   version:     "0.1.0",
   role:        "You are a CI agent.",
-  context:     ctx,
+  ctx:         ctx,
   constraints: ("Be fast.",),
   steps:       ("Run code.",),
   inputs:      ((name: "code", type: "string", description: "The code to test."),),

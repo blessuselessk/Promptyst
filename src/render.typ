@@ -43,8 +43,10 @@
   if ctx.at("_type", default: none) != "context" {
     panic("promptyst: render-context requires a context dictionary.")
   }
-  "## Context: " + ctx.id + "\n" +
-  _md-table(("Key", "Value"), ctx.entries.map(e => (e.key, e.value)))
+  (
+    "## Context: " + ctx.id + "\n" +
+    _md-table(("Key", "Value"), ctx.entries.map(e => (e.key, e.value)))
+  )
 }
 
 
@@ -61,8 +63,10 @@
     _escape-pipes(f.at("type")),
     f.description,
   ))
-  "## Output Schema: " + s.id + "\n" +
-  _md-table(("Field", "Type", "Description"), rows)
+  (
+    "## Output Schema: " + s.id + "\n" +
+    _md-table(("Field", "Type", "Description"), rows)
+  )
 }
 
 
@@ -74,13 +78,15 @@
   if cp.at("_type", default: none) != "checkpoint" {
     panic("promptyst: render-checkpoint requires a checkpoint dictionary.")
   }
-  "## Checkpoint: " + cp.id + "\n" +
-  _md-table(
-    ("Property", "Value"),
-    (
-      ("after-step", str(cp.after-step)),
-      ("assertion",  cp.assertion),
-      ("on-fail",    cp.on-fail),
+  (
+    "## Checkpoint: " + cp.id + "\n" +
+    _md-table(
+      ("Property", "Value"),
+      (
+        ("after-step", str(cp.after-step)),
+        ("assertion",  cp.assertion),
+        ("on-fail",    cp.on-fail),
+      )
     )
   )
 }
@@ -94,13 +100,15 @@
   if cm.at("_type", default: none) != "chat-mode" {
     panic("promptyst: render-chat-mode requires a chat-mode dictionary.")
   }
-  "## Chat Mode: " + cm.id + "\n" +
-  _md-table(
-    ("Property", "Value"),
-    (
-      ("turns",  cm.turns),
-      ("state",  cm.state),
-      ("prompt", cm.prompt-id),
+  (
+    "## Chat Mode: " + cm.id + "\n" +
+    _md-table(
+      ("Property", "Value"),
+      (
+        ("turns",  cm.turns),
+        ("state",  cm.state),
+        ("prompt", cm.prompt-id),
+      )
     )
   )
 }
