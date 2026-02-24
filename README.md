@@ -23,7 +23,7 @@ Exactly five. No others.
 | `p-schema(id, fields)` | schema dict |
 | `p-checkpoint(id, after-step, assertion, on-fail)` | checkpoint dict |
 | `p-chat-mode(id, turns, state, prompt)` | chat-mode dict |
-| `p-prompt(id, version, role, context, constraints, steps, inputs, schema, checkpoints?)` | prompt dict |
+| `p-prompt(id, version, role, ctx, constraints, steps, inputs, schema, checkpoints?)` | prompt dict |
 
 All constructors return plain Typst dictionaries. No rendering occurs at construction time.
 
@@ -67,7 +67,7 @@ All renderers are pure functions. Same input always produces byte-identical outp
   id:          "reply-to-ticket",
   version:     "1.0.0",
   role:        "You are a customer support agent.",
-  context:     ctx,
+  ctx:         ctx,
   constraints: ("Keep responses under 150 words.",),
   steps:       ("Read the ticket.", "Draft a reply.", "Check tone."),
   inputs:      ((name: "ticket", type: "string", description: "Raw ticket text."),),
@@ -121,7 +121,7 @@ Carries no runtime semantics. Structural declaration only.
 | id | string | yes |
 | version | string | yes |
 | role | string | yes |
-| context | context dict | yes |
+| ctx | context dict | yes |
 | constraints | array of string | yes, non-empty |
 | steps | array of string | yes, non-empty |
 | inputs | array of `(name, type, description)` | yes, non-empty |
@@ -140,7 +140,7 @@ Checkpoints are sorted at construction by `(after-step ASC, id ASC)`. Declaratio
 
 ## Role
 
-## Context: {context.id}
+## Context: {ctx.id}
 
 ## Constraints
 

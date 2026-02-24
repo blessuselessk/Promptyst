@@ -134,7 +134,7 @@
 // id:          string — unique identifier
 // version:     string — semver recommended, not enforced
 // role:        string — system role declaration
-// context:     context dictionary
+// ctx:         context dictionary
 // constraints: array of string — non-empty, rendered as ordered list
 // steps:       array of string — non-empty, rendered as ordered list, order preserved
 // inputs:      array of (name: string, type: string, description: string) — non-empty
