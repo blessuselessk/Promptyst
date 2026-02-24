@@ -21,7 +21,7 @@ jobs:
 
       - name: Compile Test File
         # We compile the test file. If it panics due to failed assertions or typing issues, the step fails.
-        run: typst compile tests/test.typ tests/test.pdf
+        run: typst compile --root . tests/test.typ tests/test.pdf
 
       # (Optional) You can upload the compiled test PDF to inspect if anything visual is rendered
       - name: Upload Test PDF
