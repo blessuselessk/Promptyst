@@ -129,6 +129,31 @@ Lighter syntax for building prompts in pure Typst. These are `v0` — not under 
 
 ---
 
+## Markdown Output
+
+`typst compile` produces PDF. To get raw Markdown, add a metadata label to your `.typ` file:
+
+```typst
+#let md = render-prompt(my-prompt)
+#metadata(md) <output>
+```
+
+Then extract with `typst query`:
+
+```bash
+typst query --root . my-file.typ "<output>" --field value --one | jq -r . > output.md
+```
+
+All files in `examples/` are wired this way. To regenerate all `.md` outputs at once:
+
+```bash
+for f in examples/*.typ; do
+  typst query --root . "$f" "<output>" --field value --one | jq -r . > "${f%.typ}.md"
+done
+```
+
+---
+
 ## Field Contracts
 
 ### p-context
