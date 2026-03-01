@@ -1,6 +1,6 @@
 # promptyst
 
-A contract-first Typst DSL for structured AI prompts.  
+A contract-first Typst DSL for structured AI prompts.
 Five primitives. Deterministic Markdown output. No runtime dependencies.
 
 ---
@@ -19,13 +19,13 @@ Exactly five. No others.
 
 | Constructor | Returns |
 |-------------|---------|
-| `p-context(id, entries)` | context dict |
-| `p-schema(id, fields)` | schema dict |
-| `p-checkpoint(id, after-step, assertion, on-fail)` | checkpoint dict |
-| `p-chat-mode(id, turns, state, prompt)` | chat-mode dict |
-| `p-prompt(id, version, role, ctx, constraints, steps, inputs, schema, checkpoints?)` | prompt dict |
+| `p-context(id: str, entries: array)` | context dict |
+| `p-schema(id: str, fields: array)` | schema dict |
+| `p-checkpoint(id: str, after-step: int, assertion: str, on-fail: str)` | checkpoint dict |
+| `p-chat-mode(id: str, turns: str, state: str, prompt: dict)` | chat-mode dict |
+| `p-prompt(id: str, version: str, role: str, ctx: dict, constraints: array, steps: array, inputs: array, schema: dict, checkpoints?: array)` | prompt dict |
 
-All constructors return plain Typst dictionaries. No rendering occurs at construction time.
+All parameters are **named** (keyword arguments). All constructors return plain Typst dictionaries. No rendering occurs at construction time.
 
 ---
 
@@ -40,6 +40,56 @@ All constructors return plain Typst dictionaries. No rendering occurs at constru
 | `render-chat-mode(cm)` | chat-mode dict | Markdown section string |
 
 All renderers are pure functions. Same input always produces byte-identical output.
+
+---
+
+## TOML Ingestion
+
+```typst
+#let result = from-toml(read("my-prompt.toml"))
+#raw(render-prompt(result.prompt), lang: "markdown")
+```
+
+`from-toml(raw)` parses a TOML string and returns a dictionary. If all required sections are present, the `prompt` key contains a fully assembled prompt dict. Partial TOML (e.g. only `[context]`) returns only the sections found — no panic for missing sections.
+
+Available keys in the result: `aspect`, `context`, `schema`, `constraints`, `steps`, `inputs`, `checkpoints`, `prompt`, `meta`, `constraints-meta`.
+
+Metadata (`[rationale]`, constraint `severity`) is preserved in the result but never rendered.
+
+See `tests/fixtures/full-prompt.toml` for the full TOML schema.
+
+---
+
+## Shorthand Helpers
+
+Lighter syntax for building prompts in pure Typst. These are `v0` — not under the immutable 10-symbol contract.
+
+| Helper | Equivalent to |
+|--------|---------------|
+| `entry(key, value)` | `(key: key, value: value)` |
+| `field(name, typ, desc)` | `(name: name, type: typ, description: desc)` |
+| `ctx(id, ..entries)` | `p-context(id: id, entries: ...)` |
+| `schema(id, ..fields)` | `p-schema(id: id, fields: ...)` |
+| `checkpoint(id, after-step, assertion, on-fail)` | `p-checkpoint(id: ..., ...)` |
+
+```typst
+// Before (core constructors)
+#let my-ctx = p-context(
+  id: "net-ctx",
+  entries: (
+    (key: "firewall", value: "443 + 22 open"),
+    (key: "gateway",  value: "18789 loopback"),
+  ),
+)
+
+// After (helpers)
+#let my-ctx = ctx("net-ctx",
+  entry("firewall", "443 + 22 open"),
+  entry("gateway",  "18789 loopback"),
+)
+```
+
+`ctx` is named `ctx` not `context` — `context` is a Typst keyword.
 
 ---
 
@@ -150,7 +200,7 @@ Checkpoints are sorted at construction by `(after-step ASC, id ASC)`. Declaratio
 
 ## Output Schema: {schema.id}
 
-## Checkpoint: {id}   ← zero or more, sorted (after-step ASC, id ASC)
+## Checkpoint: {id}   <- zero or more, sorted (after-step ASC, id ASC)
 ```
 
 ---
@@ -164,10 +214,10 @@ Every missing required field, out-of-range value, or type mismatch is a compile-
 ## Layering
 
 ```
-promptyst (this package)        ← DSL scope only
-→ opinionated layers            ← separate package
-→ vendor adapters               ← separate package
-→ runtime                       ← external, not in scope
+promptyst (this package)        <- DSL scope only
+  -> opinionated layers            <- separate package
+  -> vendor adapters               <- separate package
+  -> runtime                       <- external, not in scope
 ```
 
 promptyst has no knowledge of runtimes, vendors, transports, agents, or evaluation pipelines.

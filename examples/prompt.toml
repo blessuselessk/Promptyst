@@ -1,0 +1,59 @@
+[aspect]
+id      = "reply-to-ticket"
+version = "1.0.0"
+role    = "You are a customer support agent."
+
+[context]
+id = "support-ctx"
+
+[[context.entries]]
+key   = "domain"
+value = "Customer support"
+
+[[context.entries]]
+key   = "tone"
+value = "Professional but friendly"
+
+[[constraints]]
+text = "Keep responses under 150 words."
+
+[[constraints]]
+text = "Never promise refunds without manager approval."
+
+[[steps]]
+text = "Read the ticket."
+
+[[steps]]
+text = "Draft a reply."
+
+[[steps]]
+text = "Check tone against guidelines."
+
+[[inputs]]
+name        = "ticket"
+type        = "string"
+description = "Raw ticket text"
+
+[schema]
+id = "reply-schema"
+
+[[schema.fields]]
+name        = "response"
+type        = "string"
+description = "The reply text"
+
+[[schema.fields]]
+name        = "tone"
+type        = "enum(formal|casual)"
+description = "Detected tone"
+
+[[schema.fields]]
+name        = "escalate"
+type        = "bool"
+description = "Whether to escalate"
+
+[[checkpoints]]
+id         = "tone-check"
+after-step = 2
+assertion  = "Response tone matches the context tone guideline"
+on-fail    = "continue"
