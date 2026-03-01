@@ -1,0 +1,12 @@
+[schema]
+id = "deploy-output"
+
+[[schema.fields]]
+name        = "status"
+type        = "string"
+description = "Deployment status"
+
+[[schema.fields]]
+name        = "timestamp"
+type        = "datetime"
+description = "When the deployment completed"

@@ -19,14 +19,18 @@ jobs:
         with:
           typst-version: 'latest' # Uses the latest official Typst release
 
-      - name: Compile Test File
-        # We compile the test file. If it panics due to failed assertions or typing issues, the step fails.
+      - name: Compile Core Tests
         run: typst compile --root . tests/test.typ tests/test.pdf
 
-      # (Optional) You can upload the compiled test PDF to inspect if anything visual is rendered
-      - name: Upload Test PDF
+      - name: Compile Ingest Tests
+        run: typst compile --root . tests/test-ingest.typ tests/test-ingest.pdf
+
+      - name: Compile Helper Tests
+        run: typst compile --root . tests/test-helpers.typ tests/test-helpers.pdf
+
+      - name: Upload Test PDFs
         uses: actions/upload-artifact@v4
         with:
           name: check-output
-          path: tests/test.pdf
+          path: tests/*.pdf
           retention-days: 1

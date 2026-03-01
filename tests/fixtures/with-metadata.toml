@@ -1,0 +1,48 @@
+[aspect]
+id      = "ocd.gateway"
+version = "0.2.0"
+role    = "Caddy reverse proxy for OpenClaw TLS termination"
+
+[context]
+id = "gateway-ctx"
+
+[[context.entries]]
+key   = "proxy-target"
+value = "127.0.0.1:18789"
+
+[[constraints]]
+text     = "TLS certificates must be valid"
+severity = "security"
+
+[[constraints]]
+text     = "Proxy timeout must not exceed 30s"
+severity = "performance"
+
+[rationale]
+design     = "External access routes through Caddy reverse proxy"
+motivation = "Avoid exposing OpenClaw gateway directly to the internet"
+
+[[steps]]
+text = "Enable Caddy service"
+
+[[steps]]
+text = "Configure reverse proxy rules"
+
+[[inputs]]
+name        = "domain"
+type        = "string"
+description = "Public domain for TLS certificate"
+
+[schema]
+id = "gateway-output"
+
+[[schema.fields]]
+name        = "tls-active"
+type        = "bool"
+description = "Whether TLS is active"
+
+[[checkpoints]]
+id         = "verify-tls"
+after-step = 2
+assertion  = "TLS certificate is valid for domain"
+on-fail    = "halt"

@@ -1,0 +1,14 @@
+[[constraints]]
+text = "Must complete within 5 minutes"
+
+[[constraints]]
+text = "No data loss allowed"
+
+[[steps]]
+text = "Back up current state"
+
+[[steps]]
+text = "Apply migration"
+
+[[steps]]
+text = "Verify integrity"

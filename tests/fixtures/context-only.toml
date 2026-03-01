@@ -1,0 +1,10 @@
+[context]
+id = "standalone-ctx"
+
+[[context.entries]]
+key   = "env"
+value = "production"
+
+[[context.entries]]
+key   = "region"
+value = "us-east-1"

@@ -1,0 +1,46 @@
+[aspect]
+id      = "ocd.networking"
+version = "0.1.0"
+role    = "OpenClaw-aware networking aspect"
+
+[context]
+id = "networking-ctx"
+
+[[context.entries]]
+key   = "firewall"
+value = "Ports 443 (HTTPS) and 22 (SSH) open externally"
+
+[[context.entries]]
+key   = "gateway-port"
+value = "18789 loopback-only (proxied by Caddy)"
+
+[[constraints]]
+text = "Gateway and webhook ports stay loopback-only"
+
+[[constraints]]
+text = "All external traffic must route through Caddy"
+
+[[steps]]
+text = "Configure NetworkManager"
+
+[[steps]]
+text = "Open firewall ports 443, 22"
+
+[[inputs]]
+name        = "hostname"
+type        = "string"
+description = "Target machine hostname"
+
+[schema]
+id = "networking-output"
+
+[[schema.fields]]
+name        = "applied"
+type        = "bool"
+description = "Whether the config was applied"
+
+[[checkpoints]]
+id         = "verify-loopback"
+after-step = 2
+assertion  = "Gateway port 18789 is not in allowedTCPPorts"
+on-fail    = "halt"

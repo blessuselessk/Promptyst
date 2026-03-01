@@ -1,0 +1,70 @@
+# Checkpoints declared out of order to verify sorting.
+# Expected sort: (after-step ASC, id ASC)
+# So: alpha(1), beta(1), zulu(1), gamma(2), delta(3)
+
+[aspect]
+id      = "sort-test"
+version = "0.1.0"
+role    = "Test checkpoint sorting"
+
+[context]
+id = "sort-ctx"
+
+[[context.entries]]
+key   = "purpose"
+value = "Verify checkpoint sort order"
+
+[[constraints]]
+text = "Checkpoints must be sorted"
+
+[[steps]]
+text = "Step one"
+
+[[steps]]
+text = "Step two"
+
+[[steps]]
+text = "Step three"
+
+[[inputs]]
+name        = "x"
+type        = "string"
+description = "Dummy input"
+
+[schema]
+id = "sort-schema"
+
+[[schema.fields]]
+name        = "ok"
+type        = "bool"
+description = "Pass/fail"
+
+[[checkpoints]]
+id         = "zulu"
+after-step = 1
+assertion  = "Zulu check"
+on-fail    = "continue"
+
+[[checkpoints]]
+id         = "alpha"
+after-step = 1
+assertion  = "Alpha check"
+on-fail    = "halt"
+
+[[checkpoints]]
+id         = "delta"
+after-step = 3
+assertion  = "Delta check"
+on-fail    = "halt"
+
+[[checkpoints]]
+id         = "gamma"
+after-step = 2
+assertion  = "Gamma check"
+on-fail    = "continue"
+
+[[checkpoints]]
+id         = "beta"
+after-step = 1
+assertion  = "Beta check"
+on-fail    = "halt"

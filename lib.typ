@@ -22,6 +22,18 @@
 //   render-checkpoint checkpoint dict → Markdown string
 //   render-chat-mode  chat-mode dict  → Markdown string
 //   render-prompt     prompt dict     → Markdown string (full canonical block)
+//
+// TOML ingestion (Phase 1):
+//   from-toml      TOML string     → dict (partial or full prompt)
+//
+// Shorthand helpers (Phase 2, v0 — not under immutable 10-symbol contract):
+//   ctx            shorthand for p-context (positional entries)
+//   schema         shorthand for p-schema (positional fields)
+//   field          builds a schema field dict
+//   entry          builds a context entry dict
+//   checkpoint     shorthand for p-checkpoint (positional args)
 
 #import "src/primitives.typ": p-context, p-schema, p-checkpoint, p-chat-mode, p-prompt
 #import "src/render.typ":     render-context, render-schema, render-checkpoint, render-chat-mode, render-prompt
+#import "src/ingest.typ":     from-toml
+#import "src/helpers.typ":    ctx, schema, field, entry, checkpoint
