@@ -1,13 +1,13 @@
 // src/ingest.typ
-// TOML ingestion layer. Parses TOML strings into core constructor dicts.
+// Data ingestion layer. Parses TOML/YAML strings into core constructor dicts.
 //
-// Public symbol: from-toml(raw)
+// Public symbols: from-toml(raw), from-yaml(raw)
 //
 // This is a core module — it imports sibling src/primitives.typ directly
 // (same layer as render.typ and validate.typ). It calls constructors to
 // ensure all validation fires on the parsed data.
 //
-// Partial TOML: missing sections produce missing keys in the result dict.
+// Partial data: missing sections produce missing keys in the result dict.
 // Full assembly: when all required sections are present, builds a prompt
 // via p-prompt(). Metadata ([rationale], constraint severity) is preserved
 // in the result but never rendered.
@@ -16,20 +16,19 @@
 
 
 // ─────────────────────────────────────────────
-// from-toml
+// _from-data (private)
 //
-// raw: string — TOML-encoded prompt data
+// data: dictionary — parsed prompt data (from toml() or yaml())
 //
 // Returns a dictionary with optional keys:
 //   context, schema, constraints, steps, inputs, checkpoints,
 //   aspect, prompt, meta, constraints-meta
 //
-// Missing TOML sections → absent keys (no panic).
+// Missing sections → absent keys (no panic).
 // Present sections with invalid data → panic via constructor validation.
 // ─────────────────────────────────────────────
 
-#let from-toml(raw) = {
-  let data = toml(bytes(raw))
+#let _from-data(data) = {
   let result = (:)
 
   // ── aspect metadata ──
@@ -140,3 +139,21 @@
 
   result
 }
+
+
+// ─────────────────────────────────────────────
+// from-toml
+//
+// raw: string — TOML-encoded prompt data
+// ─────────────────────────────────────────────
+
+#let from-toml(raw) = _from-data(toml(bytes(raw)))
+
+
+// ─────────────────────────────────────────────
+// from-yaml
+//
+// raw: string — YAML-encoded prompt data
+// ─────────────────────────────────────────────
+
+#let from-yaml(raw) = _from-data(yaml(bytes(raw)))

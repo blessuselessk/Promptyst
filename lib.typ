@@ -23,8 +23,9 @@
 //   render-chat-mode  chat-mode dict  → Markdown string
 //   render-prompt     prompt dict     → Markdown string (full canonical block)
 //
-// TOML ingestion (Phase 1):
+// Data ingestion (Phase 1):
 //   from-toml      TOML string     → dict (partial or full prompt)
+//   from-yaml      YAML string     → dict (partial or full prompt)
 //
 // Shorthand helpers (Phase 2, v0 — not under immutable 10-symbol contract):
 //   ctx            shorthand for p-context (positional entries)
@@ -35,5 +36,5 @@
 
 #import "src/primitives.typ": p-context, p-schema, p-checkpoint, p-chat-mode, p-prompt
 #import "src/render.typ":     render-context, render-schema, render-checkpoint, render-chat-mode, render-prompt
-#import "src/ingest.typ":     from-toml
+#import "src/ingest.typ":     from-toml, from-yaml
 #import "src/helpers.typ":    ctx, schema, field, entry, checkpoint

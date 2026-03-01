@@ -216,6 +216,41 @@
 #assert(meta-result.at("meta", default: none) != none, message: "T8: metadata result has meta")
 
 
+// ─────────────────────────────────────────────
+// Test 9: YAML round-trip
+// from-yaml → render-prompt → assert sections present
+// (mirrors T1 but uses YAML fixture + from-yaml)
+// ─────────────────────────────────────────────
+
+#let yaml-raw = read("fixtures/full-prompt.yaml")
+#let yaml-full = from-yaml(yaml-raw)
+
+// Must have a prompt key (all required sections present)
+#assert(yaml-full.at("prompt", default: none) != none, message: "T9: YAML full prompt should assemble")
+
+#let yaml-rendered = render-prompt(yaml-full.prompt)
+#assert(type(yaml-rendered) == str, message: "T9: rendered output must be a string")
+#assert(yaml-rendered.contains("# Prompt: ocd.networking"), message: "T9: prompt header")
+#assert(yaml-rendered.contains("## Role"), message: "T9: role section")
+#assert(yaml-rendered.contains("## Context: networking-ctx"), message: "T9: context section")
+#assert(yaml-rendered.contains("## Constraints"), message: "T9: constraints section")
+#assert(yaml-rendered.contains("## Steps"), message: "T9: steps section")
+#assert(yaml-rendered.contains("## Inputs"), message: "T9: inputs section")
+#assert(yaml-rendered.contains("## Output Schema: networking-output"), message: "T9: schema section")
+#assert(yaml-rendered.contains("## Checkpoint: verify-loopback"), message: "T9: checkpoint section")
+
+
+// ─────────────────────────────────────────────
+// Test 10: YAML↔TOML equivalence
+// from-yaml and from-toml produce identical render-prompt output
+// ─────────────────────────────────────────────
+
+#let toml-rendered-t10 = render-prompt(full.prompt)
+#let yaml-rendered-t10 = render-prompt(yaml-full.prompt)
+
+#assert(toml-rendered-t10 == yaml-rendered-t10, message: "T10: YAML and TOML render identically")
+
+
 #align(center)[
   = Ingest Tests Passed!
 ]

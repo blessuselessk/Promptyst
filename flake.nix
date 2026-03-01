@@ -20,7 +20,8 @@
           filter = path: type:
             type == "directory"
             || pkgs.lib.hasSuffix ".typ" path
-            || pkgs.lib.hasSuffix ".toml" path;
+            || pkgs.lib.hasSuffix ".toml" path
+            || pkgs.lib.hasSuffix ".yaml" path;
         };
 
         mkTestCheck = testFile: typixLib.mkTypstDerivation {
