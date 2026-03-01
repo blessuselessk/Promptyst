@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
     branches: [ "main" ]
@@ -7,30 +6,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-  test:
-    name: Run Typst Tests
+  check:
+    name: Nix Flake Check
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Typst
-        uses: typst-community/setup-typst@v3
-        with:
-          typst-version: 'latest' # Uses the latest official Typst release
-
-      - name: Compile Core Tests
-        run: typst compile --root . tests/test.typ tests/test.pdf
-
-      - name: Compile Ingest Tests
-        run: typst compile --root . tests/test-ingest.typ tests/test-ingest.pdf
-
-      - name: Compile Helper Tests
-        run: typst compile --root . tests/test-helpers.typ tests/test-helpers.pdf
-
-      - name: Upload Test PDFs
-        uses: actions/upload-artifact@v4
-        with:
-          name: check-output
-          path: tests/*.pdf
-          retention-days: 1
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: nix flake check --print-build-logs

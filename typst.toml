@@ -6,5 +6,4 @@ description = "Contract-first DSL for structured AI prompts. Five primitives. De
 license     = "MIT"
 authors     = []
 
-[package.keywords]
-tags = ["prompt", "dsl", "ai", "contract", "structured", "markdown"]
+keywords = ["prompt", "dsl", "ai", "contract", "structured", "markdown"]

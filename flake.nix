@@ -4,38 +4,40 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    typix = {
+      url = "github:loqusion/typix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { nixpkgs, flake-utils, typix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-      in
-      {
-        devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            typst
-            # You can add other tools like `just` or `git` here if needed
-            just
-          ];
-
-          shellHook = ''
-            echo "Promptyst Typst Dev Environment Loaded!"
-            typst --version
-          '';
+        typixLib = typix.lib.${system};
+        src = pkgs.lib.cleanSourceWith {
+          src = ./.;
+          filter = path: type:
+            type == "directory"
+            || pkgs.lib.hasSuffix ".typ" path
+            || pkgs.lib.hasSuffix ".toml" path;
         };
 
-        # A basic check to ensure compilation passes in the Nix environment
-        checks.default = pkgs.stdenv.mkDerivation {
-          name = "promptyst-tests";
-          src = ./.;
-          buildInputs = [ pkgs.typst ];
-          phases = [ "unpackPhase" "buildPhase" ];
-          buildPhase = ''
-            typst compile tests/test.typ out.pdf
-            # If the above passes without panic, the tests succeed.
-            touch $out
-          '';
+        mkTestCheck = testFile: typixLib.mkTypstDerivation {
+          name = "promptyst-${builtins.replaceStrings ["/"] ["-"] testFile}";
+          inherit src;
+          buildPhaseTypstCommand = "typst compile --root . ${testFile} output.pdf";
+          installPhaseCommand = "touch $out";
+        };
+      in {
+        checks = {
+          test-core    = mkTestCheck "tests/test.typ";
+          test-ingest  = mkTestCheck "tests/test-ingest.typ";
+          test-helpers = mkTestCheck "tests/test-helpers.typ";
+        };
+
+        devShells.default = typixLib.devShell {
+          packages = [ pkgs.just ];
         };
       }
     );
