@@ -53,6 +53,12 @@
 // This is the final artifact — canonical Markdown suitable for
 // CLAUDE.md, AGENTS.md, or any agent context file.
 
+#let md = render-prompt(result.prompt)
+
 [== Rendered Prompt]
 
-#raw(render-prompt(result.prompt), lang: "markdown")
+// Display as PDF (typst compile)
+#raw(md, lang: "markdown")
+
+// Export as raw Markdown (typst query --root . examples/e2e-pipeline.typ "<output>" --field value --one)
+#metadata(md) <output>

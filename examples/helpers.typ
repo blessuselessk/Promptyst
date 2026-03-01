@@ -40,4 +40,11 @@
   checkpoints: (my-checkpoint,),
 )
 
-#raw(render-prompt(my-prompt), lang: "markdown")
+// Render to Markdown
+#let md = render-prompt(my-prompt)
+
+// Display as PDF (typst compile)
+#raw(md, lang: "markdown")
+
+// Export as raw Markdown (typst query --root . examples/helpers.typ "<output>" --field value --one)
+#metadata(md) <output>

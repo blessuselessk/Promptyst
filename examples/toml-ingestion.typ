@@ -7,4 +7,10 @@
 
 // from-toml returns a dict. When all required sections are present,
 // the "prompt" key holds the assembled prompt dict.
-#raw(render-prompt(result.prompt), lang: "markdown")
+#let md = render-prompt(result.prompt)
+
+// Display as PDF (typst compile)
+#raw(md, lang: "markdown")
+
+// Export as raw Markdown (typst query --root . examples/toml-ingestion.typ "<output>" --field value --one)
+#metadata(md) <output>
