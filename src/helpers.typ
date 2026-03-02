@@ -13,33 +13,35 @@
 #import "primitives.typ": p-context, p-schema, p-checkpoint
 
 
-// ─────────────────────────────────────────────
-// entry(key, value)
-// Convenience for building context entry dicts.
-// ─────────────────────────────────────────────
-
+/// Build a context entry dictionary.
+///
+/// - key (str): Entry key.
+/// - value (str): Entry value.
+/// -> dictionary
 #let entry(key, value) = (key: key, value: value)
 
 
-// ─────────────────────────────────────────────
-// field(name, typ, desc)
-// Convenience for building schema field dicts.
-// Named `typ` not `type` — avoids shadowing Typst's type() builtin.
-// ─────────────────────────────────────────────
-
+/// Build a schema field dictionary.
+///
+/// Named `typ` (not `type`) to avoid shadowing Typst's `type()` builtin.
+///
+/// - name (str): Field name.
+/// - typ (str): Field type (passed through verbatim).
+/// - desc (str): Field description.
+/// -> dictionary
 #let field(name, typ, desc) = (name: name, type: typ, description: desc)
 
 
-// ─────────────────────────────────────────────
-// ctx(id, ..pairs)
-// Shorthand for p-context. Accepts positional entry dicts.
-//
-//   ctx("my-ctx", entry("k", "v"), entry("k2", "v2"))
-//
-// Or with inline tuples:
-//   ctx("my-ctx", ("k", "v"), ("k2", "v2"))
-// ─────────────────────────────────────────────
-
+/// Shorthand for `p-context`. Accepts positional entry dicts or tuple pairs.
+///
+/// ```typst
+/// ctx("my-ctx", entry("k", "v"), entry("k2", "v2"))
+/// ctx("my-ctx", ("k", "v"), ("k2", "v2"))  // tuple shorthand
+/// ```
+///
+/// - id (str): Context identifier.
+/// - ..entries (arguments): Positional `entry()` dicts or `(key, value)` tuples.
+/// -> dictionary
 #let ctx(id, ..entries) = {
   let parsed = entries.pos().map(e => {
     if type(e) == array {
@@ -54,26 +56,32 @@
 }
 
 
-// ─────────────────────────────────────────────
-// schema(id, ..fields)
-// Shorthand for p-schema. Accepts positional field dicts.
-//
-//   schema("my-schema", field("name", "string", "desc"))
-// ─────────────────────────────────────────────
-
+/// Shorthand for `p-schema`. Accepts positional field dicts.
+///
+/// ```typst
+/// schema("my-schema", field("name", "string", "A description"))
+/// ```
+///
+/// - id (str): Schema identifier.
+/// - ..fields (arguments): Positional `field()` dictionaries.
+/// -> dictionary
 #let schema(id, ..fields) = p-schema(
   id: id,
   fields: fields.pos(),
 )
 
 
-// ─────────────────────────────────────────────
-// checkpoint(id, after-step, assertion, on-fail)
-// Shorthand for p-checkpoint. Positional args for conciseness.
-//
-//   checkpoint("verify", 2, "Data is valid", "halt")
-// ─────────────────────────────────────────────
-
+/// Shorthand for `p-checkpoint`. All positional args for conciseness.
+///
+/// ```typst
+/// checkpoint("verify", 2, "Data is valid", "halt")
+/// ```
+///
+/// - id (str): Checkpoint identifier.
+/// - after-step (int): Step number (>= 1) after which to evaluate.
+/// - assertion (str): Plain-language assertion statement.
+/// - on-fail (str): Either `"halt"` or `"continue"`.
+/// -> dictionary
 #let checkpoint(id, after-step, assertion, on-fail) = p-checkpoint(
   id:         id,
   after-step: after-step,

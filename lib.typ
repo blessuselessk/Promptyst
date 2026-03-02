@@ -42,6 +42,7 @@
 // PROSE adapter layer (Phase 3, evolving — NOT under 10-symbol contract):
 //   p-agent, p-instruction, p-skill, p-workflow     constructors
 //   render-agent, render-instruction, render-skill, render-workflow  renderers
+//   render-prose   TOML string → Markdown string (auto-dispatches by top-level key)
 
 #import "src/primitives.typ": p-context, p-schema, p-checkpoint, p-chat-mode, p-prompt
 #import "src/render.typ":     render-context, render-schema, render-checkpoint, render-chat-mode, render-prompt
@@ -50,3 +51,34 @@
 #import "src/adapters/prose.typ": render-agent, render-instruction, render-skill, render-workflow
 #import "src/ingest.typ":     from-toml, from-yaml
 #import "src/helpers.typ":    ctx, schema, field, entry, checkpoint
+
+/// Render a PROSE TOML source to Markdown.
+///
+/// Parses the TOML string via `from-toml`, detects the top-level primitive key
+/// (agent, instruction, skill, workflow, prompt, context, schema), and dispatches
+/// to the appropriate renderer.
+///
+/// Panics if no recognized primitive key is found.
+///
+/// - raw (str): Raw TOML string containing exactly one PROSE primitive.
+/// -> str
+#let render-prose(raw) = {
+  let data = from-toml(raw)
+  if data.at("agent", default: none) != none {
+    render-agent(data.agent)
+  } else if data.at("instruction", default: none) != none {
+    render-instruction(data.instruction)
+  } else if data.at("skill", default: none) != none {
+    render-skill(data.skill)
+  } else if data.at("workflow", default: none) != none {
+    render-workflow(data.workflow)
+  } else if data.at("prompt", default: none) != none {
+    render-prompt(data.prompt)
+  } else if data.at("context", default: none) != none {
+    render-context(data.context)
+  } else if data.at("schema", default: none) != none {
+    render-schema(data.schema)
+  } else {
+    panic("promptyst: render-prose found no recognized primitive in TOML input")
+  }
+}

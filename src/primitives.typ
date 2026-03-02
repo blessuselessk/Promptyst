@@ -11,13 +11,14 @@
 #import "validate.typ": _require, _require-nonempty, _enum-check
 
 
-// ─────────────────────────────────────────────
-// p-context
-//
-// id:      string — unique identifier
-// entries: array of (key: string, value: string) — ordered, non-empty
-// ─────────────────────────────────────────────
-
+/// Construct a context dictionary with ordered key-value entries.
+///
+/// Each entry must be a dictionary with `key` and `value` string fields.
+/// Panics if `id` is missing or `entries` is empty.
+///
+/// - id (str): Unique identifier for this context.
+/// - entries (array): Ordered, non-empty list of `(key: str, value: str)` dictionaries.
+/// -> dictionary
 #let p-context(id: none, entries: none) = {
   let id      = _require(id, "context.id")
   let entries = _require-nonempty(entries, "context.entries")
@@ -29,14 +30,14 @@
 }
 
 
-// ─────────────────────────────────────────────
-// p-schema
-//
-// id:     string — unique identifier
-// fields: array of (name: string, type: string, description: string) — non-empty
-//         type strings are passed through verbatim. Pipes are escaped at render time.
-// ─────────────────────────────────────────────
-
+/// Construct a schema dictionary describing output fields.
+///
+/// Each field must have `name`, `type`, and `description` string keys.
+/// Type strings are passed through verbatim; pipes are escaped at render time.
+///
+/// - id (str): Unique identifier for this schema.
+/// - fields (array): Non-empty list of `(name: str, type: str, description: str)` dictionaries.
+/// -> dictionary
 #let p-schema(id: none, fields: none) = {
   let id     = _require(id, "schema.id")
   let fields = _require-nonempty(fields, "schema.fields")
@@ -49,16 +50,17 @@
 }
 
 
-// ─────────────────────────────────────────────
-// p-checkpoint
-//
-// id:         string — unique identifier
-// after-step: int >= 1 — must be within the step count of the containing prompt
-//             (enforced at p-prompt construction, not here)
-// assertion:  string — plain-language statement; not evaluated by the DSL
-// on-fail:    "halt" | "continue"
-// ─────────────────────────────────────────────
-
+/// Construct a checkpoint dictionary for post-step validation.
+///
+/// Checkpoints declare assertions to evaluate after a given step.
+/// The `after-step` bound is validated against the prompt's step count
+/// at `p-prompt` construction time, not here.
+///
+/// - id (str): Unique identifier for this checkpoint.
+/// - after-step (int): Step number (>= 1) after which to evaluate.
+/// - assertion (str): Plain-language assertion statement; not evaluated by the DSL.
+/// - on-fail (str): Either `"halt"` or `"continue"`.
+/// -> dictionary
 #let p-checkpoint(
   id:         none,
   after-step: none,
@@ -86,17 +88,16 @@
 }
 
 
-// ─────────────────────────────────────────────
-// p-chat-mode
-//
-// id:     string — unique identifier
-// turns:  "single" | "multi"
-// state:  "stateless" | "stateful"
-// prompt: prompt dictionary — only prompt.id is retained in the output dict.
-//         The full prompt block does not expand inside chat-mode.
-//         This is a structural declaration only; carries no runtime semantics.
-// ─────────────────────────────────────────────
-
+/// Construct a chat-mode dictionary wrapping a prompt.
+///
+/// Only `prompt.id` is retained in the output — the full prompt does not
+/// expand inside chat-mode. This is a structural declaration with no runtime semantics.
+///
+/// - id (str): Unique identifier for this chat mode.
+/// - turns (str): Either `"single"` or `"multi"`.
+/// - state (str): Either `"stateless"` or `"stateful"`.
+/// - prompt (dictionary): A prompt dictionary (from `p-prompt`). Only its `id` is stored.
+/// -> dictionary
 #let p-chat-mode(
   id:     none,
   turns:  none,
@@ -128,22 +129,22 @@
 }
 
 
-// ─────────────────────────────────────────────
-// p-prompt
-//
-// id:          string — unique identifier
-// version:     string — semver recommended, not enforced
-// role:        string — system role declaration
-// ctx:         context dictionary
-// constraints: array of string — non-empty, rendered as ordered list
-// steps:       array of string — non-empty, rendered as ordered list, order preserved
-// inputs:      array of (name: string, type: string, description: string) — non-empty
-// schema:      schema dictionary
-// checkpoints: array of checkpoint dictionaries — optional, defaults to ()
-//              Stored sorted by (after-step ASC, id ASC). Declaration order discarded.
-//              Boundary rule: after-step must be <= steps.len()
-// ─────────────────────────────────────────────
-
+/// Construct a full prompt dictionary from all required components.
+///
+/// Assembles context, constraints, steps, inputs, schema, and optional checkpoints
+/// into a single dictionary. Checkpoints are sorted deterministically by
+/// `(after-step ASC, id ASC)` — declaration order is discarded.
+///
+/// - id (str): Unique identifier for this prompt.
+/// - version (str): Version string (semver recommended, not enforced).
+/// - role (str): System role declaration.
+/// - ctx (dictionary): A context dictionary (from `p-context`).
+/// - constraints (array): Non-empty list of constraint strings, rendered as ordered list.
+/// - steps (array): Non-empty list of step strings, order preserved.
+/// - inputs (array): Non-empty list of `(name: str, type: str, description: str)` dictionaries.
+/// - schema (dictionary): A schema dictionary (from `p-schema`).
+/// - checkpoints (array): Optional list of checkpoint dictionaries. Each `after-step` must be <= `steps.len()`.
+/// -> dictionary
 #let p-prompt(
   id:          none,
   version:     none,

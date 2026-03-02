@@ -202,19 +202,21 @@
 }
 
 
-// ─────────────────────────────────────────────
-// from-toml
-//
-// raw: string — TOML-encoded prompt data
-// ─────────────────────────────────────────────
-
+/// Parse a TOML string into a prompt result dictionary.
+///
+/// Missing sections produce absent keys (no panic). Present sections with
+/// invalid data panic via constructor validation. When all required sections
+/// are present, a full prompt is assembled via `p-prompt`.
+///
+/// - raw (str): TOML-encoded prompt data.
+/// -> dictionary
 #let from-toml(raw) = _from-data(toml(bytes(raw)))
 
 
-// ─────────────────────────────────────────────
-// from-yaml
-//
-// raw: string — YAML-encoded prompt data
-// ─────────────────────────────────────────────
-
+/// Parse a YAML string into a prompt result dictionary.
+///
+/// Behaves identically to `from-toml` but accepts YAML input.
+///
+/// - raw (str): YAML-encoded prompt data.
+/// -> dictionary
 #let from-yaml(raw) = _from-data(yaml(bytes(raw)))

@@ -43,22 +43,22 @@
 // ═════════════════════════════════════════════
 
 
-// ─────────────────────────────────────────────
-// p-agent
-//
-// id:          string (required)
-// description: string (required)
-// tools:       array of string (optional, default ())
-// handoffs:    array of string (optional, default ())
-// model:       string (optional, default none)
-// persona:     string (required — the introductory paragraph)
-// expertise:   array of string (required)
-// boundaries:  dict with can, cannot, approval keys (required)
-// extra-sections: array of (heading, body) dicts (optional, default ())
-//              Rendered after Boundaries, before References. Body is raw Markdown.
-// references:  array of (label, path) dicts (optional, default ())
-// ─────────────────────────────────────────────
-
+/// Construct an agent dictionary for PROSE agent primitives.
+///
+/// Agents have a persona, domain expertise, and operational boundaries.
+/// Extra sections and references are optional.
+///
+/// - id (str): Unique agent identifier.
+/// - description (str): Short description (used in frontmatter).
+/// - tools (array): Tool names the agent can use. Default: `()`.
+/// - handoffs (array): Agent IDs this agent can hand off to. Default: `()`.
+/// - model (str): Preferred model identifier. Default: `none`.
+/// - persona (str): Introductory paragraph defining the agent's voice.
+/// - expertise (array): Non-empty list of domain expertise strings.
+/// - boundaries (dictionary): Dict with `can`, `cannot`, and `approval` string keys.
+/// - extra-sections (array): List of `(heading: str, body: str)` dicts. Default: `()`.
+/// - references (array): List of `(label: str, path: str)` dicts. Default: `()`.
+/// -> dictionary
 #let p-agent(
   id:          none,
   description: none,
@@ -97,20 +97,18 @@
 }
 
 
-// ─────────────────────────────────────────────
-// p-instruction
-//
-// id:         string (required)
-// apply-to:   string glob (required)
-// description: string (optional, default none)
-// sections:   array of (heading, items|body) dicts (required)
-//             each section has exactly one of:
-//               items: array of string → rendered as bullet list
-//               body:  string → rendered as raw Markdown
-// prohibited: array of string (optional, default ())
-// references: array of (label, path) dicts (optional, default ())
-// ─────────────────────────────────────────────
-
+/// Construct an instruction dictionary for PROSE instruction primitives.
+///
+/// Each section must have exactly one of `items` (bullet list) or `body` (raw Markdown).
+/// If a section is named "Prohibited", the auto-appended Prohibited section is skipped.
+///
+/// - id (str): Unique instruction identifier.
+/// - apply-to (str): Glob pattern for files this instruction applies to.
+/// - description (str): Short description (used in frontmatter). Default: `none`.
+/// - sections (array): Non-empty list of `(heading: str, items?: array, body?: str)` dicts.
+/// - prohibited (array): List of prohibited-action strings. Default: `()`.
+/// - references (array): List of `(label: str, path: str)` dicts. Default: `()`.
+/// -> dictionary
 #let p-instruction(
   id:          none,
   apply-to:    none,
@@ -153,20 +151,18 @@
 }
 
 
-// ─────────────────────────────────────────────
-// p-skill
-//
-// name:        string (required)
-// description: string (required, can be multiline)
-// trigger:     string (required)
-// rules:       array of string (required)
-// extra-sections: array of (heading, body) dicts (optional, default ())
-//              Rendered after Quick Rules, before Detailed References.
-// references-preamble: string (optional, default none)
-//              Prose paragraph before the reference links.
-// references:  array of (label, path) dicts (optional, default ())
-// ─────────────────────────────────────────────
-
+/// Construct a skill dictionary for PROSE skill primitives.
+///
+/// Skills define trigger conditions, quick rules, and optional detailed references.
+///
+/// - name (str): Skill name (used in frontmatter).
+/// - description (str): Skill description (can be multiline, rendered as YAML block scalar).
+/// - trigger (str): Condition that activates this skill.
+/// - rules (array): Non-empty list of rule strings (rendered as numbered list).
+/// - extra-sections (array): List of `(heading: str, body: str)` dicts. Default: `()`.
+/// - references-preamble (str): Prose paragraph before reference links. Default: `none`.
+/// - references (array): List of `(label: str, path: str)` dicts. Default: `()`.
+/// -> dictionary
 #let p-skill(
   name:        none,
   description: none,
@@ -194,17 +190,17 @@
 }
 
 
-// ─────────────────────────────────────────────
-// p-workflow
-//
-// id:          string (required)
-// description: string (required)
-// mode:        string (optional, default "agent")
-// agent:       string (optional, default none)
-// phases:      array of (name, steps) dicts (required)
-//              each phase may optionally include checkpoint: string
-// ─────────────────────────────────────────────
-
+/// Construct a workflow dictionary for PROSE workflow primitives.
+///
+/// Workflows define phased execution plans. Each phase has a name, steps,
+/// and an optional checkpoint string.
+///
+/// - id (str): Unique workflow identifier.
+/// - description (str): Workflow description (used in frontmatter).
+/// - mode (str): Execution mode. Default: `"agent"`.
+/// - agent (str): Agent identifier to execute this workflow. Default: `none`.
+/// - phases (array): Non-empty list of `(name: str, steps: array, checkpoint?: str)` dicts.
+/// -> dictionary
 #let p-workflow(
   id:          none,
   description: none,
@@ -238,10 +234,13 @@
 // ═════════════════════════════════════════════
 
 
-// ─────────────────────────────────────────────
-// render-agent
-// ─────────────────────────────────────────────
-
+/// Render an agent dictionary as Markdown with YAML frontmatter.
+///
+/// Outputs frontmatter (description, tools, optional handoffs/model),
+/// persona, expertise list, boundaries, extra sections, and references.
+///
+/// - a (dictionary): An agent dictionary (from `p-agent`).
+/// -> str
 #let render-agent(a) = {
   if a.at("_type", default: none) != "agent" {
     panic("promptyst: render-agent requires an agent dictionary.")
@@ -292,10 +291,13 @@
 }
 
 
-// ─────────────────────────────────────────────
-// render-instruction
-// ─────────────────────────────────────────────
-
+/// Render an instruction dictionary as Markdown with YAML frontmatter.
+///
+/// Sections with `items` render as bullet lists; sections with `body` render as raw Markdown.
+/// If a section is named "Prohibited", the auto-appended Prohibited section is skipped.
+///
+/// - instr (dictionary): An instruction dictionary (from `p-instruction`).
+/// -> str
 #let render-instruction(instr) = {
   if instr.at("_type", default: none) != "instruction" {
     panic("promptyst: render-instruction requires an instruction dictionary.")
@@ -340,10 +342,13 @@
 }
 
 
-// ─────────────────────────────────────────────
-// render-skill
-// ─────────────────────────────────────────────
-
+/// Render a skill dictionary as Markdown with YAML frontmatter.
+///
+/// Outputs frontmatter (name, block-scalar description), trigger section,
+/// numbered rules, extra sections, and optional detailed references.
+///
+/// - sk (dictionary): A skill dictionary (from `p-skill`).
+/// -> str
 #let render-skill(sk) = {
   if sk.at("_type", default: none) != "skill" {
     panic("promptyst: render-skill requires a skill dictionary.")
@@ -385,10 +390,13 @@
 }
 
 
-// ─────────────────────────────────────────────
-// render-workflow
-// ─────────────────────────────────────────────
-
+/// Render a workflow dictionary as Markdown with YAML frontmatter.
+///
+/// Each phase renders as a numbered heading with its steps.
+/// Phases with a `checkpoint` key append a bold checkpoint line.
+///
+/// - wf (dictionary): A workflow dictionary (from `p-workflow`).
+/// -> str
 #let render-workflow(wf) = {
   if wf.at("_type", default: none) != "workflow" {
     panic("promptyst: render-workflow requires a workflow dictionary.")

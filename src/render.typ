@@ -15,13 +15,20 @@
 //   ## Checkpoint: {id}  ← zero or more, sorted by (after-step ASC, id ASC)
 
 
-// ─────────────────────────────────────────────
-// PUBLIC: Markdown table helpers
-// Promoted from internal _md-* in v0.2.0.
-// ─────────────────────────────────────────────
-
+/// Format an array of cells as a single Markdown table row.
+///
+/// - cells (array): List of cell strings.
+/// -> str
 #let md-row(cells) = "| " + cells.join(" | ") + " |"
 
+/// Render a complete Markdown table from headers and rows.
+///
+/// Generates a separator row with dashes at least 3 characters wide,
+/// matching header width when longer.
+///
+/// - headers (array): Column header strings.
+/// - rows (array): List of row arrays (each the same length as `headers`).
+/// -> str
 #let md-table(headers, rows) = {
   // Separator dashes are at least 3 wide, matching header width if longer.
   let sep = headers.map(h => "-" * calc.max(h.len(), 3))
@@ -32,14 +39,17 @@
   ).join("\n")
 }
 
-// Pipe characters inside type strings must be escaped for valid Markdown tables.
+/// Escape pipe characters for use inside Markdown table cells.
+///
+/// - s (str): Input string potentially containing `|` characters.
+/// -> str
 #let escape-pipes(s) = s.replace("|", "\\|")
 
 
-// ─────────────────────────────────────────────
-// PUBLIC: render-context
-// ─────────────────────────────────────────────
-
+/// Render a context dictionary as a Markdown section with a key-value table.
+///
+/// - ctx (dictionary): A context dictionary (from `p-context`).
+/// -> str
 #let render-context(ctx) = {
   if ctx.at("_type", default: none) != "context" {
     panic("promptyst: render-context requires a context dictionary.")
@@ -51,10 +61,12 @@
 }
 
 
-// ─────────────────────────────────────────────
-// PUBLIC: render-schema
-// ─────────────────────────────────────────────
-
+/// Render a schema dictionary as a Markdown section with a field table.
+///
+/// Pipe characters in type strings are escaped automatically.
+///
+/// - s (dictionary): A schema dictionary (from `p-schema`).
+/// -> str
 #let render-schema(s) = {
   if s.at("_type", default: none) != "schema" {
     panic("promptyst: render-schema requires a schema dictionary.")
@@ -71,10 +83,10 @@
 }
 
 
-// ─────────────────────────────────────────────
-// PUBLIC: render-checkpoint
-// ─────────────────────────────────────────────
-
+/// Render a checkpoint dictionary as a Markdown section with a property table.
+///
+/// - cp (dictionary): A checkpoint dictionary (from `p-checkpoint`).
+/// -> str
 #let render-checkpoint(cp) = {
   if cp.at("_type", default: none) != "checkpoint" {
     panic("promptyst: render-checkpoint requires a checkpoint dictionary.")
@@ -93,10 +105,10 @@
 }
 
 
-// ─────────────────────────────────────────────
-// PUBLIC: render-chat-mode
-// ─────────────────────────────────────────────
-
+/// Render a chat-mode dictionary as a Markdown section with a property table.
+///
+/// - cm (dictionary): A chat-mode dictionary (from `p-chat-mode`).
+/// -> str
 #let render-chat-mode(cm) = {
   if cm.at("_type", default: none) != "chat-mode" {
     panic("promptyst: render-chat-mode requires a chat-mode dictionary.")
@@ -115,13 +127,15 @@
 }
 
 
-// ─────────────────────────────────────────────
-// PUBLIC: render-prompt
-// Expands context and schema inline. Checkpoints follow schema,
-// sorted by (after-step ASC, id ASC) — order established at
-// p-prompt construction, not here.
-// ─────────────────────────────────────────────
-
+/// Render a full prompt dictionary as canonical Markdown.
+///
+/// Produces the complete prompt document with fixed section order:
+/// Role, Context, Constraints, Steps, Inputs, Schema, Checkpoints.
+/// Context and schema are expanded inline. Checkpoints appear sorted
+/// by `(after-step ASC, id ASC)` as established at construction time.
+///
+/// - p (dictionary): A prompt dictionary (from `p-prompt`).
+/// -> str
 #let render-prompt(p) = {
   if p.at("_type", default: none) != "prompt" {
     panic("promptyst: render-prompt requires a prompt dictionary.")
