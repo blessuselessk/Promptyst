@@ -1,7 +1,7 @@
 // src/render.typ
 // Pure rendering functions: dictionary → Markdown string.
 // All render-* functions are public (exported via lib.typ).
-// All _md-* and _escape-* helpers are internal.
+// md-table, md-row, escape-pipes are public utilities (promoted in v0.2.0).
 //
 // Canonical Prompt output section order (Phase 1 contract):
 //   # Prompt: {id}
@@ -16,23 +16,24 @@
 
 
 // ─────────────────────────────────────────────
-// INTERNAL: Markdown table helpers
+// PUBLIC: Markdown table helpers
+// Promoted from internal _md-* in v0.2.0.
 // ─────────────────────────────────────────────
 
-#let _md-row(cells) = "| " + cells.join(" | ") + " |"
+#let md-row(cells) = "| " + cells.join(" | ") + " |"
 
-#let _md-table(headers, rows) = {
+#let md-table(headers, rows) = {
   // Separator dashes are at least 3 wide, matching header width if longer.
   let sep = headers.map(h => "-" * calc.max(h.len(), 3))
   (
-    (_md-row(headers),) +
-    (_md-row(sep),) +
-    rows.map(r => _md-row(r))
+    (md-row(headers),) +
+    (md-row(sep),) +
+    rows.map(r => md-row(r))
   ).join("\n")
 }
 
 // Pipe characters inside type strings must be escaped for valid Markdown tables.
-#let _escape-pipes(s) = s.replace("|", "\\|")
+#let escape-pipes(s) = s.replace("|", "\\|")
 
 
 // ─────────────────────────────────────────────
@@ -45,7 +46,7 @@
   }
   (
     "## Context: " + ctx.id + "\n" +
-    _md-table(("Key", "Value"), ctx.entries.map(e => (e.key, e.value)))
+    md-table(("Key", "Value"), ctx.entries.map(e => (e.key, e.value)))
   )
 }
 
@@ -60,12 +61,12 @@
   }
   let rows = s.fields.map(f => (
     f.name,
-    _escape-pipes(f.at("type")),
+    escape-pipes(f.at("type")),
     f.description,
   ))
   (
     "## Output Schema: " + s.id + "\n" +
-    _md-table(("Field", "Type", "Description"), rows)
+    md-table(("Field", "Type", "Description"), rows)
   )
 }
 
@@ -80,7 +81,7 @@
   }
   (
     "## Checkpoint: " + cp.id + "\n" +
-    _md-table(
+    md-table(
       ("Property", "Value"),
       (
         ("after-step", str(cp.after-step)),
@@ -102,7 +103,7 @@
   }
   (
     "## Chat Mode: " + cm.id + "\n" +
-    _md-table(
+    md-table(
       ("Property", "Value"),
       (
         ("turns",  cm.turns),
@@ -149,7 +150,7 @@
     render-context(p.context),
     "## Constraints\n" + constraints-md,
     "## Steps\n"       + steps-md,
-    "## Inputs\n"      + _md-table(("Name", "Type", "Description"), input-rows),
+    "## Inputs\n"      + md-table(("Name", "Type", "Description"), input-rows),
     render-schema(p.schema),
   )
 

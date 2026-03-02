@@ -33,8 +33,20 @@
 //   field          builds a schema field dict
 //   entry          builds a context entry dict
 //   checkpoint     shorthand for p-checkpoint (positional args)
+//
+// Markdown utilities (promoted from internal in v0.2.0):
+//   md-table       headers, rows → Markdown table string
+//   md-row         cells → single Markdown table row
+//   escape-pipes   string → string with | escaped
+//
+// PROSE adapter layer (Phase 3, evolving — NOT under 10-symbol contract):
+//   p-agent, p-instruction, p-skill, p-workflow     constructors
+//   render-agent, render-instruction, render-skill, render-workflow  renderers
 
 #import "src/primitives.typ": p-context, p-schema, p-checkpoint, p-chat-mode, p-prompt
 #import "src/render.typ":     render-context, render-schema, render-checkpoint, render-chat-mode, render-prompt
+#import "src/render.typ":     md-table, md-row, escape-pipes
+#import "src/adapters/prose.typ": p-agent, p-instruction, p-skill, p-workflow
+#import "src/adapters/prose.typ": render-agent, render-instruction, render-skill, render-workflow
 #import "src/ingest.typ":     from-toml, from-yaml
 #import "src/helpers.typ":    ctx, schema, field, entry, checkpoint

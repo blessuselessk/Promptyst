@@ -1,0 +1,30 @@
+[instruction]
+id          = "dendritic"
+apply-to    = "modules/**/*.nix"
+description = "Dendritic aspect authoring rules for NixOS modules"
+prohibited  = [
+  "No `specialArgs` or `extraSpecialArgs`",
+  "No `default.nix` under `modules/`",
+  "No secrets in Nix code or the Nix store",
+]
+
+[[instruction.sections]]
+heading = "Aspect Structure"
+items   = [
+  "One aspect per file, filename is the aspect name",
+  "Use `ocd.<name>.nixos = { ... }` for community aspects",
+  "Use `<user>.<name>.nixos = { ... }` for personal aspects",
+  "Compose with `includes`, decompose with `provides`",
+]
+
+[[instruction.sections]]
+heading = "Path Conventions"
+items   = [
+  "`/_` infix in path: excluded by `import-tree` (helpers, context, data)",
+  "`+flag` prefix: Dendrix opt-in group",
+  "`private` infix: excluded from community pipeline",
+]
+
+[[instruction.references]]
+label = "Stack reference"
+path  = "../context/stack.context.md"

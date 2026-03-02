@@ -1,0 +1,19 @@
+[skill]
+name        = "primitive-composability"
+description = "Validate agent primitive compositions against the PROSE tier model.\nUse when creating, modifying, or wiring agent primitives (.agent.md,\n.instructions.md, .prompt.md, .context.md, .memory.md, .spec.md, SKILL.md).\nEnforces valid directed edges between active, passive, and meta tiers."
+trigger     = "You are creating or modifying a file under `.ai/` that is an agent primitive.\nBefore adding references, invocations, or handoffs between primitives,\nvalidate the composition against the rules below."
+rules       = [
+  "**Check the tier** of your primitive (active / passive / meta)",
+  "**Passive primitives** (instruction, context, memory, spec) can only reference other primitives — they cannot invoke or produce",
+  "**Active primitives** (agent, prompt) can invoke, reference, and produce",
+  "**Agents cannot consume specs directly** — prompts mediate",
+  "**Only agents can hand off** to other agents — prompts activate, they don't delegate",
+]
+
+[[skill.references]]
+label = "Composability schema"
+path  = "../../context/primitive-composability-schema.yaml"
+
+[[skill.references]]
+label = "Composability matrix"
+path  = "../../context/primitive-composability-matrix.md"

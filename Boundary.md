@@ -27,6 +27,7 @@ rules apply to consumers building layers on top of this package.
 │  lib.typ → src/primitives.typ       │
 │          → src/render.typ           │
 │          → src/validate.typ         │
+│          → src/adapters/prose.typ   │
 └─────────────────────────────────────┘
 ```
 
@@ -122,9 +123,47 @@ must use its own tagging convention in a separate namespace.
 
 ---
 
+## Markdown Utilities (promoted in v0.2.0)
+
+Previously internal `_md-*` helpers, now public for use by adapter layers
+and consumers building custom renderers.
+
+| Symbol | Input | Returns |
+|--------|-------|---------|
+| `md-table` | `headers`, `rows` | Markdown table string |
+| `md-row` | `cells` | Single Markdown table row string |
+| `escape-pipes` | `string` | String with `\|` escaped |
+
+These are stable utilities. Their signatures are fixed from v0.2.0.
+
+---
+
+## Adapter Layer (Phase 3, evolving)
+
+PROSE primitive constructors and renderers. These are NOT under the
+immutable 10-symbol contract. Signatures may change between minor versions.
+
+| Symbol | Type | Stable |
+|--------|------|--------|
+| `p-agent` | constructor | no (adapter, evolving) |
+| `p-instruction` | constructor | no (adapter, evolving) |
+| `p-skill` | constructor | no (adapter, evolving) |
+| `p-workflow` | constructor | no (adapter, evolving) |
+| `render-agent` | renderer | no (adapter, evolving) |
+| `render-instruction` | renderer | no (adapter, evolving) |
+| `render-skill` | renderer | no (adapter, evolving) |
+| `render-workflow` | renderer | no (adapter, evolving) |
+
+Adapter-layer dictionaries carry `_type` tags (`"agent"`, `"instruction"`,
+`"skill"`, `"workflow"`). The same `_type` rules apply: consumers must not
+read or branch on `_type` — that is the render layer's responsibility.
+
+---
+
 ## Versioning Rule
 
 The public API (10 symbols, their signatures, and their Markdown output
 contract) is stable within a major version. Any change to the Markdown
 output format — even whitespace — is a breaking change and requires a
 major version bump. The internal symbols carry no versioning guarantee.
+Adapter layer symbols follow semver but are not under the immutable contract.

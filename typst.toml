@@ -1,8 +1,8 @@
 [package]
 name        = "promptyst"
-version     = "0.1.0"
+version     = "0.2.0"
 entrypoint  = "lib.typ"
-description = "Contract-first DSL for structured AI prompts. Five primitives. Deterministic Markdown output."
+description = "Contract-first DSL for structured AI prompts. Core primitives + PROSE adapter layer. Deterministic Markdown output."
 license     = "MIT"
 authors     = []
 

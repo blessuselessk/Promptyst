@@ -1,0 +1,32 @@
+[workflow]
+id          = "aspect-creation"
+description = "End-to-end workflow for creating a new dendritic aspect"
+mode        = "agent"
+agent       = "nix-aspect-author"
+
+[[workflow.phases]]
+name       = "Discovery"
+steps      = [
+  "Identify which namespace the aspect belongs to (ocd, user, infra)",
+  "Check for existing aspects that overlap",
+  "Review includes/provides of related aspects",
+]
+checkpoint = "Namespace and file path confirmed with user"
+
+[[workflow.phases]]
+name       = "Implementation"
+steps      = [
+  "Create the aspect file with correct namespace prefix",
+  "Wire options and config",
+  "Add includes/provides declarations",
+]
+checkpoint = "Aspect compiles with `nix flake check`"
+
+[[workflow.phases]]
+name       = "Validation"
+steps      = [
+  "Run treefmt to ensure formatting",
+  "Verify import-tree picks up the new file",
+  "Test on target host configuration",
+]
+checkpoint = "All checks green, aspect integrated"

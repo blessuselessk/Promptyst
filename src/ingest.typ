@@ -13,6 +13,7 @@
 // in the result but never rendered.
 
 #import "primitives.typ": p-context, p-schema, p-checkpoint, p-prompt
+#import "adapters/prose.typ": p-agent, p-instruction, p-skill, p-workflow
 
 
 // ─────────────────────────────────────────────
@@ -102,6 +103,66 @@
       on-fail:    c.at("on-fail"),
     ))
     result.insert("checkpoints", cps)
+  }
+
+  // ── PROSE: agent ──
+  let agent-data = data.at("agent", default: none)
+  if agent-data != none {
+    let a = p-agent(
+      id:          agent-data.at("id"),
+      description: agent-data.at("description"),
+      tools:       agent-data.at("tools", default: ()),
+      handoffs:    agent-data.at("handoffs", default: ()),
+      model:       agent-data.at("model", default: none),
+      persona:     agent-data.at("persona"),
+      expertise:   agent-data.at("expertise"),
+      boundaries:  agent-data.at("boundaries"),
+      extra-sections: agent-data.at("extra-sections", default: ()),
+      references:  agent-data.at("references", default: ()),
+    )
+    result.insert("agent", a)
+  }
+
+  // ── PROSE: instruction ──
+  let instr-data = data.at("instruction", default: none)
+  if instr-data != none {
+    let i = p-instruction(
+      id:          instr-data.at("id"),
+      apply-to:    instr-data.at("apply-to"),
+      description: instr-data.at("description", default: none),
+      sections:    instr-data.at("sections"),
+      prohibited:  instr-data.at("prohibited", default: ()),
+      references:  instr-data.at("references", default: ()),
+    )
+    result.insert("instruction", i)
+  }
+
+  // ── PROSE: skill ──
+  let skill-data = data.at("skill", default: none)
+  if skill-data != none {
+    let s = p-skill(
+      name:        skill-data.at("name"),
+      description: skill-data.at("description"),
+      trigger:     skill-data.at("trigger"),
+      rules:       skill-data.at("rules"),
+      extra-sections: skill-data.at("extra-sections", default: ()),
+      references-preamble: skill-data.at("references-preamble", default: none),
+      references:  skill-data.at("references", default: ()),
+    )
+    result.insert("skill", s)
+  }
+
+  // ── PROSE: workflow ──
+  let workflow-data = data.at("workflow", default: none)
+  if workflow-data != none {
+    let w = p-workflow(
+      id:          workflow-data.at("id"),
+      description: workflow-data.at("description"),
+      mode:        workflow-data.at("mode", default: "agent"),
+      agent:       workflow-data.at("agent", default: none),
+      phases:      workflow-data.at("phases"),
+    )
+    result.insert("workflow", w)
   }
 
   // ── rationale (metadata, not rendered) ──
